@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 
 import Input from "../../components/Input";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
-import { schema, type Schema } from "../../ultils/ultils";
 import { useMutation } from "@tanstack/react-query";
 import { registerAccount } from "../../apis/auth.api";
 import { omit } from "lodash";
+import { schema, type Schema } from "../../ultils/rules";
+import { isAxiosUnprocessableEntityError } from "../../ultils/utils";
+import type { ResponseApi } from "../../types/utils.type";
 
 export type FormData = Schema;
 
@@ -14,6 +16,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -28,6 +31,38 @@ export default function Register() {
     const body = omit(data, ["confirm_password"]);
     registerAccountMutation.mutate(body, {
       onSuccess: (data) => console.log(data),
+      onError: (error) => {
+        if (
+          isAxiosUnprocessableEntityError<
+            ResponseApi<Omit<FormData, "confirm_password">>
+          >(error)
+        ) {
+          const formError = error.response?.data.data;
+          console.log(formError);
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              setError(key as keyof Omit<FormData, "confirm_password">, {
+                message:
+                  formError[key as keyof Omit<FormData, "confirm_password">],
+                type: "server",
+              });
+            });
+          }
+        }
+        //   if (formError?.email) {
+        //     setError("email", {
+        //       message: formError.email,
+        //       type: "Server",
+        //     });
+        //   }
+        //   if (formError?.password) {
+        //     setError("password", {
+        //       message: formError.password,
+        //       type: "Server",
+        //     });
+        //   }
+        // }
+      },
     });
   });
   return (
