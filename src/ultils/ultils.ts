@@ -78,7 +78,7 @@ export const schema = yup.object({
     .required("Comfirm password là bắt buộc")
     .min(6, "Độ dài 6 - 160 ký tự")
     .max(160, "Độ dài 6- 160 ký tự")
-    .oneOf(["password"], "Nhập lại password không khớp"),
+    .oneOf([yup.ref("password")], "Nhập lại password không khớp"),
 });
 
 export type Schema = yup.InferType<typeof schema>;
