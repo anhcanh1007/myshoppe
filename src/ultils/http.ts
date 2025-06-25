@@ -6,7 +6,10 @@ import {
   clearAccessTokenFromLS,
   getAccessTokenToLS,
   setAccessTokenFromLS,
+  setProfileToLS,
 } from "./auth";
+import { path } from "../constants/path";
+import type { AuthResponse } from "../types/auth.type";
 
 class Http {
   instance: AxiosInstance;
@@ -37,12 +40,14 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => {
         if (
-          response.config.url === "/login" ||
-          response.config.url === "/register"
+          response.config.url === path.login ||
+          response.config.url === path.register
         ) {
-          this.access_token = response.data.data.access_token;
+          const data = response.data as AuthResponse;
+          this.access_token = data.data.access_token;
           setAccessTokenFromLS(this.access_token);
-        } else if (response.config.url === "/logout") {
+          setProfileToLS(data.data.user);
+        } else if (response.config.url === path.logout) {
           this.access_token = "";
           clearAccessTokenFromLS();
         }

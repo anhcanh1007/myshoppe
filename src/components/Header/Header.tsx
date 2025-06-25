@@ -6,11 +6,13 @@ import { logout } from "../../apis/auth.api";
 import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
 export default function Header() {
-  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, isAuthenticated, profile, setProfile } =
+    useContext(AppContext);
   const handleLogout = useMutation({
     mutationFn: logout,
     onSuccess: () => {
       setIsAuthenticated(false);
+      setProfile(null);
     },
   });
   const logoutAccount = () => handleLogout.mutate();
@@ -96,7 +98,7 @@ export default function Header() {
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
-              <div>duthanhduoc</div>
+              <div>{profile?.email}</div>
             </Popover>
           )}
           {!isAuthenticated && (
