@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
 import { useMutation } from "@tanstack/react-query";
-import { registerAccount } from "../../apis/auth.api";
+import authApi from "../../apis/auth.api";
 import { omit } from "lodash";
 import { schema, type Schema } from "../../ultils/rules";
 import { isAxiosUnprocessableEntityError } from "../../ultils/utils";
@@ -13,7 +13,6 @@ import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
 import Button from "../../components/Button";
 import { path } from "../../constants/path";
-import { setProfileToLS } from "../../ultils/auth";
 
 export type FormData = Schema;
 
@@ -31,7 +30,7 @@ export default function Register() {
 
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, "confirm_password">) =>
-      registerAccount(body),
+      authApi.registerAccount(body),
   });
 
   const onSubmit = handleSubmit((data) => {

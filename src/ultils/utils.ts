@@ -13,3 +13,17 @@ export function isAxiosUnprocessableEntityError<FormError>(
     error.response?.status === HttpStatusCode.UnprocessableEntity
   );
 }
+
+export function formatCurrency(curency: number) {
+  return new Intl.NumberFormat("de-DE").format(curency);
+}
+
+export function formatNumberToSocialStyle(value: number) {
+  return new Intl.NumberFormat("en", {
+    maximumFractionDigits: 1,
+    notation: "compact",
+  })
+    .format(value)
+    .replace(".", ",")
+    .toLowerCase();
+}
