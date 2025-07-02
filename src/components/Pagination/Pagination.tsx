@@ -137,9 +137,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
           </Link>
         )}
         {renderPagination()}
-        <button className="bg-white rounded px-3 py-2 shadow-sm mx-2 cursor-pointer  border">
-          Next
-        </button>
+
         {page === pageSize ? (
           <span className="mx-2 cursor-not-allowed rounded border bg-white/60 px-3 py-2  shadow-sm">
             Next
