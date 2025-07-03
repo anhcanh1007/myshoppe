@@ -4,4 +4,5 @@ export const path = {
   profile: "/profile",
   home: "/",
   logout: "/logout",
+  productDetail: ":id",
 };
