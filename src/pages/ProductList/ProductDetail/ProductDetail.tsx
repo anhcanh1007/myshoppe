@@ -12,7 +12,6 @@ import InputNumber from "../../../components/InputNumber";
 import ProductRating from "../../../components/ProductRating";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "../../../types/product.type";
-import { offset } from "@floating-ui/react-dom-interactions";
 
 export default function ProductDetail() {
   const { nameId } = useParams();

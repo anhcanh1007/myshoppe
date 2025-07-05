@@ -98,6 +98,7 @@ export const schema = yup.object({
     message: "Giá không phù hợp",
     test: testPriceMinMax,
   }),
+  name: yup.string().trim().required("Nam bat buoc phai nhap"),
 });
 
 export type Schema = yup.InferType<typeof schema>;

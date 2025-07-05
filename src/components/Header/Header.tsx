@@ -1,11 +1,41 @@
-import { Link } from "react-router-dom";
+import { createSearchParams, Link, useNavigate } from "react-router-dom";
 
 import Popover from "../Popover";
 import { useMutation } from "@tanstack/react-query";
 import authApi from "../../apis/auth.api";
 import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
+import useQueryConfig from "../../hooks/useQueryConfig";
+import { useForm } from "react-hook-form";
+import { schema, type Schema } from "../../ultils/rules";
+import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
+import { path } from "../../constants/path";
+import { omit } from "lodash";
+
+type FormData = Pick<Schema, "name">;
+const nameSchema = schema.pick(["name"]);
+
 export default function Header() {
+  const queryConfig = useQueryConfig();
+
+  const { register, handleSubmit } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+    },
+    resolver: yupResolver(nameSchema),
+  });
+  const navigate = useNavigate();
+
+  const onSubmitSearch = handleSubmit((data) => {
+    const config = queryConfig.order
+      ? omit({ ...queryConfig, name: data.name }, ["order", "sort_by"])
+      : { ...queryConfig, name: data.name };
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(config).toString(),
+    });
+  });
+
   const { setIsAuthenticated, isAuthenticated, profile, setProfile } =
     useContext(AppContext);
   const handleLogout = useMutation({
@@ -202,13 +232,13 @@ export default function Header() {
               </g>
             </svg>
           </Link>
-          <form className="col-span-9">
+          <form className="col-span-9" onSubmit={onSubmitSearch}>
             <div className="bg-white rounded-sm p-1 flex">
               <input
                 type="text"
-                name="search"
                 className="text-black px-3 py-2 flex-grow border-none outline-none bg-transparent"
                 placeholder="Free Ship Đơn Từ 0Đ"
+                {...register("name")}
               />
               <button className="rounded-sm py-2 px-6 flex-shrink-0 bg-orange hover:opacity-90">
                 <svg
