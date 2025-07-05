@@ -9,14 +9,19 @@ import {
   rateSale,
 } from "../../../ultils/utils";
 import InputNumber from "../../../components/InputNumber";
+import Product from "../Product/Product";
 import ProductRating from "../../../components/ProductRating";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Product } from "../../../types/product.type";
+import type {
+  Product as ProductType,
+  ProductConfig,
+} from "../../../types/product.type";
 
 export default function ProductDetail() {
   const { nameId } = useParams();
   const id = getIdFromNameID(nameId as string);
   const imageRef = useRef<HTMLImageElement>(null);
+
   const { data: productDetailData } = useQuery({
     queryKey: ["product", id],
     queryFn: () => productApi.getProductDetail(id as string),
@@ -25,9 +30,23 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState("");
 
   const product = productDetailData?.data.data;
+
   const currentImages = useMemo(() => {
     return product ? product.images.slice(...currentIndexImages) : [];
   }, [product, currentIndexImages]);
+
+  const queryConfig: ProductConfig = {
+    limit: "20",
+    page: "1",
+    category: product?.category._id,
+  };
+
+  const { data: productsData } = useQuery({
+    queryKey: ["products", queryConfig],
+    queryFn: () => productApi.getProducts(queryConfig),
+    staleTime: 3 * 60 * 1000,
+    enabled: Boolean(product),
+  });
 
   useEffect(() => {
     if (product && product.images.length > 0) {
@@ -36,12 +55,12 @@ export default function ProductDetail() {
   }, [product]);
 
   const next = () => {
-    if (currentIndexImages[1] < (product as Product).images.length) {
+    if (currentIndexImages[1] < (product as ProductType).images.length) {
       setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1]);
     }
   };
   const prev = () => {
-    if (currentIndexImages[1] < (product as Product).images.length) {
+    if (currentIndexImages[1] < (product as ProductType).images.length) {
       setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1]);
     }
   };
@@ -291,6 +310,20 @@ export default function ProductDetail() {
               }}
             />
           </div>
+        </div>
+      </div>
+      <div className="mt-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="uppercase text-gray-400">CÓ THỂ BẠN CŨNG THÍCH</div>
+          {productsData && (
+            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {productsData.data.data.products.map((product) => (
+                <div className="col-span-1" key={product._id}>
+                  <Product product={product} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

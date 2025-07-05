@@ -2,7 +2,6 @@ import { createSearchParams, Link, useNavigate } from "react-router-dom";
 import { path } from "../../../constants/path";
 import Button from "../../../components/Button";
 import type Category from "../../../types/category.type";
-import type { QueryConfig } from "../ProductList";
 import classNames from "classnames";
 import type { NoUndefinedField } from "../../../types/utils.type";
 import { schema, type Schema } from "../../../ultils/rules";
@@ -11,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
 import InputNumber from "../../../components/InputNumber";
 import RatingFilter from "../RatingFilter";
 import { omit } from "lodash";
+import type { QueryConfig } from "../../../hooks/useQueryConfig";
 
 interface Props {
   categories: Category[];
