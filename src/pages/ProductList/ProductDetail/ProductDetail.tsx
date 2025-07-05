@@ -9,11 +9,13 @@ import {
 } from "../../../ultils/utils";
 import InputNumber from "../../../components/InputNumber";
 import ProductRating from "../../../components/ProductRating";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "../../../types/product.type";
+import { offset } from "@floating-ui/react-dom-interactions";
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const imageRef = useRef<HTMLImageElement>(null);
   const { data: productDetailData } = useQuery({
     queryKey: ["product", id],
     queryFn: () => productApi.getProductDetail(id as string),
@@ -46,6 +48,30 @@ export default function ProductDetail() {
   const chooseactive = (img: string) => {
     setActiveImage(img);
   };
+
+  const handleZoomIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const image = imageRef.current as HTMLImageElement;
+    const { naturalHeight, naturalWeight } = image;
+
+    //cách 1: lấy offsetX, offsetY khi xử lý được bubble event
+    // const { offsetX, offsetY } = e.nativeEvent;
+
+    //cách 2: khi không xử lý được bubble event
+    const offsetY = e.pageX - (rect.x + window.scrollX);
+    const offsetX = e.pageY - (rect.y + window.scrollY);
+    const top = offsetY * (1 - naturalHeight / rect.height);
+    const left = offsetX * (1 - naturalWeight / rect.width);
+    image.style.width = naturalWeight + "px";
+    image.style.height = naturalHeight + "px";
+    image.style.maxWidth = "unset";
+    image.style.top = top + "px";
+    image.style.left = left + "px";
+  };
+
+  const handleZoomOut = () => {
+    imageRef.current?.removeAttribute("style");
+  };
   if (!product) return null;
   return (
     <div className="bg-gray-200 py-6">
@@ -53,11 +79,16 @@ export default function ProductDetail() {
         <div className="bg-white p-4 shadow">
           <div className="grid grid-cols-12 gap-9">
             <div className="col-span-5">
-              <div className="relative w-full pt-[100%] shadow">
+              <div
+                className="relative w-full pt-[100%] shadow overflow-hidden cursor-zoom-in"
+                onMouseMove={handleZoomIn}
+                onMouseLeave={handleZoomOut}
+              >
                 <img
                   src={activeImage}
                   alt={product.name}
                   className="absolute top-0 left-0 h-full w-full bg-white object-cover"
+                  ref={imageRef}
                 />
               </div>
               <div className="relative mt-4 grid grid-cols-5 gap-1">
