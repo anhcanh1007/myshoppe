@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import {
   formatCurrency,
   formatNumberToSocialStyle,
+  getIdFromNameID,
   rateSale,
 } from "../../../ultils/utils";
 import InputNumber from "../../../components/InputNumber";
@@ -14,7 +15,8 @@ import type { Product } from "../../../types/product.type";
 import { offset } from "@floating-ui/react-dom-interactions";
 
 export default function ProductDetail() {
-  const { id } = useParams();
+  const { nameId } = useParams();
+  const id = getIdFromNameID(nameId as string);
   const imageRef = useRef<HTMLImageElement>(null);
   const { data: productDetailData } = useQuery({
     queryKey: ["product", id],

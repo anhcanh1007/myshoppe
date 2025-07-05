@@ -3,6 +3,7 @@ import type { Product } from "../../../types/product.type";
 import {
   formatCurrency,
   formatNumberToSocialStyle,
+  generateNameId,
 } from "../../../ultils/utils";
 import ProductRating from "../../../components/ProductRating";
 import { path } from "../../../constants/path";
@@ -13,7 +14,12 @@ interface ProductType {
 
 export default function Product({ product }: ProductType) {
   return (
-    <Link to={`${path.home}${product._id}`}>
+    <Link
+      to={`${path.home}${generateNameId({
+        name: product.name,
+        id: product._id,
+      })}`}
+    >
       <div className="bg-white shadow rounded-sm hover:translate-y-[-0.04rem] hover:shadow-md duration-100 transition-transform overflow-hidden">
         <div className="w-full pt-[100%] relative">
           <img
