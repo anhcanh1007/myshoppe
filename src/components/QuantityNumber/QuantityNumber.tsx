@@ -7,7 +7,7 @@ interface Props extends PropsInputNumber {
   onIncrement?: (value: number) => void;
   onDecrement?: (value: number) => void;
   onType?: (value: number) => void;
-  classNameWrapper: string;
+  classNameWrapper?: string;
 }
 
 export default function QuantityNumber({
