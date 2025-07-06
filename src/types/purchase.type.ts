@@ -7,7 +7,7 @@ export interface Purchase {
   buy_count: number;
   price: number;
   price_before_discount: number;
-  status: PurchaseStatus;
+  status: PurchaseListStatus;
   user: string;
   product: Product;
   createdAt: string;
