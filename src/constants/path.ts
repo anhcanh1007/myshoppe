@@ -5,4 +5,5 @@ export const path = {
   home: "/",
   logout: "/logout",
   productDetail: ":nameId",
+  cart: "/cart",
 };
