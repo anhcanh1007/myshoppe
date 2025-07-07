@@ -1,6 +1,7 @@
 import type React from "react";
 import InputNumber from "../InputNumber";
 import type { PropsInputNumber } from "../InputNumber/InputNumber";
+import { useState } from "react";
 
 interface Props extends PropsInputNumber {
   max?: number;
@@ -19,6 +20,8 @@ export default function QuantityNumber({
   value,
   ...rest
 }: Props) {
+  const [localValue, setLocalValue] = useState<number>(Number(value) || 0);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let _value = Number(e.target.value);
     if (max !== undefined && _value > max) {
@@ -30,18 +33,20 @@ export default function QuantityNumber({
   };
 
   const increase = () => {
-    let _value = Number(value) + 1;
+    let _value = Number(value || localValue) + 1;
     if (max !== undefined && _value > max) {
       _value = max;
     }
     onIncrement && onIncrement(_value);
+    setLocalValue(_value);
   };
   const decrease = () => {
-    let _value = Number(value) - 1;
+    let _value = Number(value || localValue) - 1;
     if (max !== undefined && _value > max) {
       _value = max;
     }
     onDecrement && onDecrement(_value);
+    setLocalValue(_value);
   };
 
   return (
@@ -62,7 +67,7 @@ export default function QuantityNumber({
         </svg>
       </button>
       <InputNumber
-        value={value}
+        value={value || localValue}
         className=""
         classNameError="hidden"
         classNameInput="h-8 w-14 border-t border-b border-gray-300 p-1 text-center outline-none"
