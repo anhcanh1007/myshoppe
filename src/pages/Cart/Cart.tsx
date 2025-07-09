@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import { formatCurrency, generateNameId } from "../../ultils/utils";
 import QuantityNumber from "../../components/QuantityNumber";
@@ -7,13 +7,54 @@ import { path } from "../../constants/path";
 import { useQuery } from "@tanstack/react-query";
 import { purchasesStatus } from "../../constants/purchase";
 import purchaseApi from "../../apis/purchase.api";
+import type { Purchase } from "../../types/purchase.type";
+import { produce } from "immer";
+
+interface ExtendedPurchase extends Purchase {
+  disable: boolean;
+  checked: boolean;
+}
 
 export default function Cart() {
+  const [extendedPurchaseState, setExtendedPurchaseState] = useState<
+    ExtendedPurchase[]
+  >([]);
+  const isCheckAll = extendedPurchaseState.every((prev) => prev.checked);
+
   const { data: purchasesInCartData } = useQuery({
     queryKey: ["purchases", { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
   });
+
   const purchasesInCart = purchasesInCartData?.data.data;
+
+  useEffect(() => {
+    setExtendedPurchaseState(
+      purchasesInCart?.map((purchase) => ({
+        ...purchase,
+        disable: false,
+        checked: false,
+      })) || []
+    );
+  }, [purchasesInCart]);
+
+  const handleCheck =
+    (productIndex: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setExtendedPurchaseState(
+        produce((draft) => {
+          draft[productIndex].checked = e.target.checked;
+        })
+      );
+    };
+
+  const handleCheckAll = () => {
+    setExtendedPurchaseState((prev) =>
+      prev.map((purchase) => ({
+        ...purchase,
+        checked: !isCheckAll,
+      }))
+    );
+  };
   return (
     <div className="bg-neutral-100 py-16">
       <div className="max-w-7xl mx-auto px-4">
@@ -23,7 +64,12 @@ export default function Cart() {
               <div className="col-span-6">
                 <div className="flex items-center">
                   <div className="flex flex-shrink-0 items-center justify-center pr-3">
-                    <input type="checkbox" className="h-5 w-5 accent-orange" />
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5 accent-orange-500"
+                      checked={isCheckAll}
+                      onChange={handleCheckAll}
+                    />
                   </div>
                   <div className="flex-grow text-black">Sản phẩm</div>
                 </div>
@@ -38,7 +84,7 @@ export default function Cart() {
               </div>
             </div>
             <div className="my-3 rounded-sm bg-white p-5 shadow">
-              {purchasesInCart?.map((purchase, index) => (
+              {extendedPurchaseState?.map((purchase, index) => (
                 <div
                   key={purchase._id}
                   className="mb-5 grid grid-cols-12 rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0"
@@ -48,7 +94,9 @@ export default function Cart() {
                       <div className="flex flex-shrink-0 items-center justify-center pr-3">
                         <input
                           type="checkbox"
-                          className="h-5 w-5 accent-orange"
+                          className="h-5 w-5 accent-orange-500"
+                          checked={purchase.checked}
+                          onChange={handleCheck(index)}
                         />
                       </div>
                       <div className="flex-grow">
@@ -111,7 +159,7 @@ export default function Cart() {
                         </span>
                       </div>
                       <div className="col-span-1">
-                        <button className="bg-none text-black transition-colors hover:text-orange">
+                        <button className="bg-none text-black transition-colors hover:text-orange-500">
                           Xóa
                         </button>
                       </div>
@@ -125,9 +173,19 @@ export default function Cart() {
         <div className="sticky bottom-0 z-10 mt-8 flex flex-col rounded-sm border border-gray-100 bg-white p-5 shadow sm:flex-row sm:items-center">
           <div className="flex items-center">
             <div className="flex flex-shrink-0 items-center justify-center pr-3">
-              <input type="checkbox" className="h-5 w-5 accent-orange" />
+              <input
+                type="checkbox"
+                className="h-5 w-5 accent-orange-500"
+                checked={isCheckAll}
+                onChange={handleCheckAll}
+              />
             </div>
-            <button className="mx-3 border-none bg-none">Chọn tất cả</button>
+            <button
+              className="mx-3 border-none bg-none"
+              onClick={handleCheckAll}
+            >
+              Chọn tất cả {extendedPurchaseState.length}
+            </button>
             <button className="mx-3 border-none bg-none">Xóa</button>
           </div>
 
@@ -139,7 +197,7 @@ export default function Cart() {
               </div>
               <div className="flex items-center text-sm sm:justify-end">
                 <div className="text-gray-500">Tiết kiệm</div>
-                <div className="ml-6 text-orange">₫138000</div>
+                <div className="ml-6 text-orange-500">₫138000</div>
               </div>
             </div>
             <Button className="mt-5 flex h-10 w-52 items-center justify-center bg-red-500 text-sm uppercase text-white hover:bg-red-600 sm:ml-4 sm:mt-0">
