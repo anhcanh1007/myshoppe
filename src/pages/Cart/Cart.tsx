@@ -10,6 +10,7 @@ import purchaseApi from "../../apis/purchase.api";
 import type { Purchase } from "../../types/purchase.type";
 import { produce } from "immer";
 import { keyBy } from "lodash";
+import { toast } from "react-toastify";
 
 interface ExtendedPurchase extends Purchase {
   disable: boolean;
@@ -21,6 +22,26 @@ export default function Cart() {
     ExtendedPurchase[]
   >([]);
   const isCheckAll = extendedPurchaseState.every((prev) => prev.checked);
+  const checkedPurchases = extendedPurchaseState.filter(
+    (purchase) => purchase.checked
+  );
+  const checkedPurchasesCount = checkedPurchases.length;
+  const totalCheckedPurchasePrice = checkedPurchases.reduce(
+    (result, current) => {
+      return result + current.product.price * current.buy_count;
+    },
+    0
+  );
+  const totalCheckedPurchaseSavingPrice = checkedPurchases.reduce(
+    (result, current) => {
+      return (
+        result +
+        (current.product.price_before_discount - current.product.price) *
+          current.buy_count
+      );
+    },
+    0
+  );
 
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ["purchases", { status: purchasesStatus.inCart }],
@@ -41,6 +62,42 @@ export default function Cart() {
       );
     });
   }, [purchasesInCart]);
+
+  const buyPurchases = useMutation({
+    mutationFn: purchaseApi.buyProducts,
+    onSuccess: (data) => {
+      refetch();
+      toast.success(data.data.message);
+    },
+  });
+
+  const handleBuyPurchases = () => {
+    if (checkedPurchases.length > 0) {
+      const body = checkedPurchases.map((purchase) => ({
+        product_id: purchase.product._id,
+        buy_count: purchase.buy_count,
+      }));
+
+      buyPurchases.mutate(body);
+    }
+  };
+
+  const deletePurchase = useMutation({
+    mutationFn: purchaseApi.deletePurchase,
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handleDeletePurchase = (purchaseIndex: number) => {
+    const purchaseId = extendedPurchaseState[purchaseIndex]._id;
+    deletePurchase.mutate([purchaseId]);
+  };
+
+  const handleDeletePurchaseMany = () => {
+    const purchaseIds = checkedPurchases.map((purchase) => purchase._id);
+    deletePurchase.mutate(purchaseIds);
+  };
 
   const handleCheck =
     (productIndex: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,7 +282,10 @@ export default function Cart() {
                         </span>
                       </div>
                       <div className="col-span-1">
-                        <button className="bg-none text-black transition-colors hover:text-orange-500">
+                        <button
+                          onClick={() => handleDeletePurchase(index)}
+                          className="bg-none text-black transition-colors hover:text-orange-500"
+                        >
                           Xóa
                         </button>
                       </div>
@@ -252,21 +312,33 @@ export default function Cart() {
             >
               Chọn tất cả {extendedPurchaseState.length}
             </button>
-            <button className="mx-3 border-none bg-none">Xóa</button>
+            <button
+              onClick={handleDeletePurchaseMany}
+              className="mx-3 border-none bg-none"
+            >
+              Xóa
+            </button>
           </div>
 
           <div className="mt-5 flex flex-col sm:ml-auto sm:mt-0 sm:flex-row sm:items-center">
             <div>
               <div className="flex items-center sm:justify-end">
-                <div>Tổng thanh toán (0 sản phẩm):</div>
-                <div className="ml-2 text-2xl text-orange">₫138000</div>
+                <div>Tổng thanh toán ({checkedPurchasesCount} sản phẩm):</div>
+                <div className="ml-2 text-2xl text-orange">
+                  ₫{formatCurrency(totalCheckedPurchasePrice)}
+                </div>
               </div>
               <div className="flex items-center text-sm sm:justify-end">
                 <div className="text-gray-500">Tiết kiệm</div>
-                <div className="ml-6 text-orange-500">₫138000</div>
+                <div className="ml-6 text-orange-500">
+                  ₫{formatCurrency(totalCheckedPurchaseSavingPrice)}
+                </div>
               </div>
             </div>
-            <Button className="mt-5 flex h-10 w-52 items-center justify-center bg-red-500 text-sm uppercase text-white hover:bg-red-600 sm:ml-4 sm:mt-0">
+            <Button
+              onClick={handleBuyPurchases}
+              className="mt-5 flex h-10 w-52 items-center justify-center bg-red-500 text-sm uppercase text-white hover:bg-red-600 sm:ml-4 sm:mt-0"
+            >
               Mua hàng
             </Button>
           </div>
