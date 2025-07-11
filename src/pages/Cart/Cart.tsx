@@ -4,11 +4,12 @@ import { formatCurrency, generateNameId } from "../../ultils/utils";
 import QuantityNumber from "../../components/QuantityNumber";
 import { Link } from "react-router-dom";
 import { path } from "../../constants/path";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { purchasesStatus } from "../../constants/purchase";
 import purchaseApi from "../../apis/purchase.api";
 import type { Purchase } from "../../types/purchase.type";
 import { produce } from "immer";
+import { keyBy } from "lodash";
 
 interface ExtendedPurchase extends Purchase {
   disable: boolean;
@@ -21,7 +22,7 @@ export default function Cart() {
   >([]);
   const isCheckAll = extendedPurchaseState.every((prev) => prev.checked);
 
-  const { data: purchasesInCartData } = useQuery({
+  const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ["purchases", { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
   });
@@ -29,13 +30,16 @@ export default function Cart() {
   const purchasesInCart = purchasesInCartData?.data.data;
 
   useEffect(() => {
-    setExtendedPurchaseState(
-      purchasesInCart?.map((purchase) => ({
-        ...purchase,
-        disable: false,
-        checked: false,
-      })) || []
-    );
+    setExtendedPurchaseState((prev) => {
+      const extendedPurchasesObject = keyBy(prev, "_id");
+      return (
+        purchasesInCart?.map((purchase) => ({
+          ...purchase,
+          disabled: false,
+          checked: Boolean(extendedPurchasesObject[purchase._id]?.checked),
+        })) || []
+      );
+    });
   }, [purchasesInCart]);
 
   const handleCheck =
@@ -55,6 +59,41 @@ export default function Cart() {
       }))
     );
   };
+
+  const updatePurchase = useMutation({
+    mutationFn: purchaseApi.updatePurchase,
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handleQuantity = (
+    purchaseIndex: number,
+    value: number,
+    enable: boolean
+  ) => {
+    if (enable) {
+      const purchase = extendedPurchaseState[purchaseIndex];
+      setExtendedPurchaseState(
+        produce((draft) => {
+          draft[purchaseIndex].disable = true;
+        })
+      );
+      updatePurchase.mutate({
+        product_id: purchase.product._id,
+        buy_count: value,
+      });
+    }
+  };
+
+  const handeTypeQuantity = (purchaseIndex: number) => (value: number) => {
+    setExtendedPurchaseState(
+      produce((draft) => {
+        draft[purchaseIndex].buy_count = value;
+      })
+    );
+  };
+
   return (
     <div className="bg-neutral-100 py-16">
       <div className="max-w-7xl mx-auto px-4">
@@ -148,6 +187,33 @@ export default function Cart() {
                           max={purchase.product.quantity}
                           value={purchase.buy_count}
                           classNameWrapper="flex items-center"
+                          onIncrement={(value) =>
+                            handleQuantity(
+                              index,
+                              value,
+                              value <= purchase.product.quantity
+                            )
+                          }
+                          onDecrement={(value) =>
+                            handleQuantity(
+                              index,
+                              value,
+                              value <= purchase.product.quantity
+                            )
+                          }
+                          onType={handeTypeQuantity(index)}
+                          onFocusOut={(value) =>
+                            handleQuantity(
+                              index,
+                              value,
+                              value >= 1 &&
+                                value <= purchase.product.quantity &&
+                                value !==
+                                  (purchasesInCart as Purchase[])[index]
+                                    .buy_count
+                            )
+                          }
+                          disabled={purchase.disable}
                         />
                       </div>
                       <div className="col-span-1">
