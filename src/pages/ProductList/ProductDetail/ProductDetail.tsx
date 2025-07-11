@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import productApi from "../../../apis/product.api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   formatCurrency,
   formatNumberToSocialStyle,
@@ -20,12 +20,14 @@ import purchaseApi from "../../../apis/purchase.api";
 import { queryClient } from "../../../main";
 import { purchasesStatus } from "../../../constants/purchase";
 import { toast } from "react-toastify";
+import { path } from "../../../constants/path";
 
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1);
   const { nameId } = useParams();
   const id = getIdFromNameID(nameId as string);
   const imageRef = useRef<HTMLImageElement>(null);
+  const navigate = useNavigate();
 
   const purchaseInCartData = useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) =>
@@ -63,6 +65,19 @@ export default function ProductDetail() {
       setActiveImage(product.images[0]);
     }
   }, [product]);
+
+  const buyNow = async () => {
+    const res = await purchaseInCartData.mutateAsync({
+      buy_count: buyCount,
+      product_id: product?._id as string,
+    });
+    const purchase = res.data.data;
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id,
+      },
+    });
+  };
 
   const next = () => {
     if (currentIndexImages[1] < (product as ProductType).images.length) {
@@ -291,7 +306,10 @@ export default function ProductDetail() {
                   </svg>
                   Thêm vào giỏ hàng
                 </button>
-                <button className="flex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange-500 px-5 capitalize text-white shadow-sm outline-none hover:bg-orange-500/90">
+                <button
+                  onClick={buyNow}
+                  className="flex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange-500 px-5 capitalize text-white shadow-sm outline-none hover:bg-orange-500/90"
+                >
                   Mua ngay
                 </button>
               </div>
