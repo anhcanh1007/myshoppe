@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import productApi from "../../../apis/product.api";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,7 +17,6 @@ import type {
 } from "../../../types/product.type";
 import QuantityNumber from "../../../components/QuantityNumber";
 import purchaseApi from "../../../apis/purchase.api";
-import { queryClient } from "../../../main";
 import { purchasesStatus } from "../../../constants/purchase";
 import { toast } from "react-toastify";
 import { path } from "../../../constants/path";
@@ -28,6 +27,7 @@ export default function ProductDetail() {
   const id = getIdFromNameID(nameId as string);
   const imageRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const purchaseInCartData = useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) =>
@@ -255,6 +255,7 @@ export default function ProductDetail() {
                   onIncrement={handleChangeCount}
                   onDecrement={handleChangeCount}
                   onType={handleChangeCount}
+                  onFocusOut={handleChangeCount}
                 />
                 <div className="ml-6 text-sm text-gray-500">
                   {product.quantity} sản phẩm có sẵn

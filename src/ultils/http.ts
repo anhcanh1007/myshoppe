@@ -60,6 +60,9 @@ class Http {
           const message = data.message || error.message;
           toast.error(message);
         }
+        if (error.response?.status === HttpStatusCode.Unauthorized) {
+          clearAccessTokenFromLS();
+        }
         return Promise.reject(error);
       }
     );
