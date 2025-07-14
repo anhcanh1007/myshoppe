@@ -1,7 +1,10 @@
 export const path = {
   login: "/login",
+  user: "/user",
+  changePassword: "/user/password",
+  historyPurchase: "/user/purchase",
   register: "/register",
-  profile: "/profile",
+  profile: "/user/profile",
   home: "/",
   logout: "/logout",
   productDetail: ":nameId",
