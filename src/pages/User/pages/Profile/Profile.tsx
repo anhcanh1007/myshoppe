@@ -16,7 +16,7 @@ import {
   isAxiosUnprocessableEntityError,
 } from "../../../../ultils/utils";
 import type { ErrorResponseApi } from "../../../../types/utils.type";
-import config from "../../../../constants/config";
+import InputFile from "../../../../components/InputFile";
 
 type ProfileFormData = Pick<
   UserSchema,
@@ -43,7 +43,6 @@ export default function Profile() {
   // Flow 2:
   // Nhấn upload: không upload lên server
   // Nhấn submit thì tiến hành upload lên server, nếu upload thành công thì tiến hành gọi api updateProfile
-  const inputFileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File>();
   const previewImage = useMemo(() => {
     return file ? URL.createObjectURL(file) : "";
@@ -62,16 +61,8 @@ export default function Profile() {
     mutationFn: (body: FormData) => userApi.uploadAvatar(body),
   });
 
-  const handleUpload = () => {
-    inputFileRef.current?.click();
-  };
-
-  const onChangeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileFromLocal = e.target.files?.[0];
-    if (fileFromLocal && fileFromLocal.size >= config.maxSizeUploadAvatar) {
-      toast.error("Không đúng định dạng ảnh", { position: "top-center" });
-    }
-    setFile(fileFromLocal);
+  const handleChange = (file?: File) => {
+    setFile(file);
   };
   const {
     register,
@@ -248,21 +239,7 @@ export default function Profile() {
                 className="w-full h-full rounded-full object-cover"
               />
             </div>
-            <input
-              className="hidden"
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              ref={inputFileRef}
-              onChange={onChangeUpload}
-              onClick={(e) => (e.target as any).value}
-            />
-            <button
-              type="button"
-              className="flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm"
-              onClick={handleUpload}
-            >
-              Chọn ảnh
-            </button>
+            <InputFile onChange={handleChange} />
             <div className="mt-3 text-gray-400">
               <div>Dụng lượng file tối đa 1 MB</div>
               <div>Định dạng:.JPEG, .PNG</div>
