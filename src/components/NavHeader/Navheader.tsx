@@ -6,6 +6,7 @@ import authApi from "../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
+import userImage from "../../assets/user/user.svg";
 
 export default function Navheader() {
   const { setIsAuthenticated, isAuthenticated, setProfile, profile } =
@@ -81,7 +82,7 @@ export default function Navheader() {
           renderPopover={
             <div className="relative rounded-sm border border-gray-200 bg-white shadow-md">
               <Link
-                to={path.profile}
+                to={path.profile || userImage}
                 className="block w-full bg-white py-3 px-4 text-left hover:bg-slate-100 hover:text-cyan-500"
               >
                 Tài khoản của tôi
@@ -103,7 +104,7 @@ export default function Navheader() {
         >
           <div className="mr-2 h-6 w-6 flex-shrink-0">
             <img
-              src="https://cf.shopee.vn/file/d04ea22afab6e6d250a370d7ccc2e675_tn"
+              src={profile?.avatar}
               alt="avatar"
               className="h-full w-full rounded-full object-cover"
             />

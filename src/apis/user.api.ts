@@ -4,8 +4,8 @@ import http from "../ultils/http";
 
 interface BodyUpdateProfile
   extends Omit<User, "_id" | "email" | "createdAt" | "updatedAt" | "roles"> {
-  password: string;
-  newPassword: string;
+  password?: string;
+  newPassword?: string;
 }
 
 const userApi = {

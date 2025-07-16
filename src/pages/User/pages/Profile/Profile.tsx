@@ -4,10 +4,13 @@ import { userSchema, type UserSchema } from "../../../../ultils/rules";
 import userApi from "../../../../apis/user.api";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import InputNumber from "../../../../components/InputNumber";
 import DataSelect from "../../components/DateSelect";
 import Button from "../../../../components/Button";
+import { toast } from "react-toastify";
+import { setProfileToLS } from "../../../../ultils/auth";
+import { AppContext } from "../../../../contexts/app.context";
 
 type FormData = Pick<
   UserSchema,
@@ -23,12 +26,15 @@ const profileSchema = userSchema.pick([
 ]);
 
 export default function Profile() {
-  const { data: profileData } = useQuery({
+  const { data: profileData, refetch } = useQuery({
     queryKey: ["profile"],
     queryFn: userApi.getProfile,
   });
+  const { setProfile } = useContext(AppContext);
   const profile = profileData?.data.data;
-  // const updateProfileMutation = useMutation(userApi.updateProfile);
+  const updateProfileMutation = useMutation({
+    mutationFn: (body: FormData) => userApi.updateProfile(body),
+  });
 
   const {
     register,
@@ -63,8 +69,12 @@ export default function Profile() {
     }
   }, [profile, setValue]);
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const onSubmit = handleSubmit(async (data) => {
+    const res = updateProfileMutation.mutateAsync({ ...data });
+    refetch();
+    setProfile((await res).data.data);
+    toast.success((await res).data.message);
+    setProfileToLS((await res).data.data);
   });
 
   console.log(profileData);
