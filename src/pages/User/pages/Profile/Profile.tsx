@@ -16,6 +16,7 @@ import {
   isAxiosUnprocessableEntityError,
 } from "../../../../ultils/utils";
 import type { ErrorResponseApi } from "../../../../types/utils.type";
+import config from "../../../../constants/config";
 
 type ProfileFormData = Pick<
   UserSchema,
@@ -67,6 +68,9 @@ export default function Profile() {
 
   const onChangeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileFromLocal = e.target.files?.[0];
+    if (fileFromLocal && fileFromLocal.size >= config.maxSizeUploadAvatar) {
+      toast.error("Không đúng định dạng ảnh", { position: "top-center" });
+    }
     setFile(fileFromLocal);
   };
   const {
@@ -250,6 +254,7 @@ export default function Profile() {
               accept=".jpg,.jpeg,.png"
               ref={inputFileRef}
               onChange={onChangeUpload}
+              onClick={(e) => (e.target as any).value}
             />
             <button
               type="button"
