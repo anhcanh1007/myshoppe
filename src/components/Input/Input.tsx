@@ -1,13 +1,14 @@
 import type { RegisterOptions, UseFormRegister } from "react-hook-form";
-import type { FormData } from "../../pages/Register/Register";
 import type { InputHTMLAttributes } from "react";
 
-interface PropsInput extends InputHTMLAttributes<HTMLInputElement> {
+interface PropsInput<TFormValues extends Record<string, any> = any>
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "name"> {
   errorMessage?: string;
-  register?: UseFormRegister<FormData>;
-  rules?: RegisterOptions<FormData>;
+  register?: UseFormRegister<TFormValues>;
+  rules?: RegisterOptions<TFormValues>;
   classNameInput?: string;
   classNameError?: string;
+  name: Extract<keyof TFormValues, string>;
 }
 export default function Input({
   register,

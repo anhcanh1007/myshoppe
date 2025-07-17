@@ -24,6 +24,7 @@ export default function Navheader() {
       });
     },
   });
+  console.log(getAvatarUrl(profile?.avatar));
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -104,7 +105,7 @@ export default function Navheader() {
         >
           <div className="mr-2 h-6 w-6 flex-shrink-0">
             <img
-              src={getAvatarUrl(profile?.avatar)}
+              src={profile?.avatar}
               alt="avatar"
               className="h-full w-full rounded-full object-cover"
             />

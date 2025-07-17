@@ -102,11 +102,14 @@ export const schema = yup.object({
 });
 
 export const userSchema = yup.object({
-  name: yup.string().max(160, "Độ dài không quá 160 ký tự"),
-  address: yup.string().max(160, "Độ dài không quá 160 ký tự"),
-  date_of_birth: yup.date().max(new Date(), "Hãy chọn một ngày trong quá khứ"),
-  avatar: yup.string().max(1000, "Độ dài không quá 1000 ký tự"),
-  phone: yup.string().max(20, "Độ dài không quá 20 ký tự"),
+  name: yup.string().max(160, "Độ dài không quá 160 ký tự").optional(),
+  address: yup.string().max(160, "Độ dài không quá 160 ký tự").optional(),
+  date_of_birth: yup
+    .date()
+    .max(new Date(), "Hãy chọn một ngày trong quá khứ")
+    .optional(),
+  avatar: yup.string().max(1000, "Độ dài không quá 1000 ký tự").optional(),
+  phone: yup.string().max(20, "Độ dài không quá 20 ký tự").optional(),
   password: schema.fields["password"],
   new_password: schema.fields["password"],
   confirm_password: schema.fields["confirm_password"],

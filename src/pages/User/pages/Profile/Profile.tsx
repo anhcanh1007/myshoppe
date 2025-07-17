@@ -4,24 +4,16 @@ import { userSchema, type UserSchema } from "../../../../ultils/rules";
 import userApi from "../../../../apis/user.api";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import InputNumber from "../../../../components/InputNumber";
 import DataSelect from "../../components/DateSelect";
 import Button from "../../../../components/Button";
 import { toast } from "react-toastify";
 import { setProfileToLS } from "../../../../ultils/auth";
 import { AppContext } from "../../../../contexts/app.context";
-import {
-  getAvatarUrl,
-  isAxiosUnprocessableEntityError,
-} from "../../../../ultils/utils";
+import { isAxiosUnprocessableEntityError } from "../../../../ultils/utils";
 import type { ErrorResponseApi } from "../../../../types/utils.type";
 import InputFile from "../../../../components/InputFile";
-
-type ProfileFormData = Pick<
-  UserSchema,
-  "address" | "name" | "avatar" | "phone" | "date_of_birth"
->;
 
 type FormDataError = Omit<ProfileFormData, "date_of_birth"> & {
   date_of_birth?: string;
@@ -34,6 +26,11 @@ const profileSchema = userSchema.pick([
   "date_of_birth",
   "name",
 ]);
+
+type ProfileFormData = Pick<
+  UserSchema,
+  "address" | "phone" | "avatar" | "date_of_birth" | "name"
+>;
 
 export default function Profile() {
   // Flow 1:
@@ -234,7 +231,7 @@ export default function Profile() {
           <div className="flex flex-col items-center">
             <div className="my-5 h-24 w-24">
               <img
-                src={previewImage || getAvatarUrl(avatar)}
+                src={previewImage || avatar}
                 alt=""
                 className="w-full h-full rounded-full object-cover"
               />

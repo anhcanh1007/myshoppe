@@ -15,7 +15,7 @@ export default function InputFile({ onChange }: Props) {
       toast.error("Không đúng định dạng ảnh", { position: "top-center" });
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      onChange && onchange(fileFromLocal);
+      onChange && onChange(fileFromLocal);
     }
   };
   const handleUpload = () => {

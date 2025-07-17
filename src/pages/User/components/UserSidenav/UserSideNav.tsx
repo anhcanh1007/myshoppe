@@ -2,7 +2,6 @@ import { Link, NavLink } from "react-router-dom";
 import { path } from "../../../../constants/path";
 import { useContext } from "react";
 import { AppContext } from "../../../../contexts/app.context";
-import { getAvatarUrl } from "../../../../ultils/utils";
 import classNames from "classnames";
 
 export default function UserSideNav() {
@@ -15,7 +14,7 @@ export default function UserSideNav() {
           className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-black/10"
         >
           <img
-            src={getAvatarUrl(profile?.avatar)}
+            src={profile?.avatar}
             alt=""
             className="h-full w-full object-cover"
           />
