@@ -60,6 +60,15 @@ import * as yup from "yup";
 //   },
 // });
 
+function yupPassword(yupString: string) {
+  return yup
+    .string()
+    .required("Comfirm password là bắt buộc")
+    .min(6, "Độ dài 6 - 160 ký tự")
+    .max(160, "Độ dài 6- 160 ký tự")
+    .oneOf([yup.ref(yupString)], "Nhập lại password không khớp");
+}
+
 function testPriceMinMax(this: yup.TestContext<yup.AnyObject>) {
   const { price_min, price_max } = this.parent;
 
@@ -82,12 +91,7 @@ export const schema = yup.object({
     .required("Password là bắt buộc")
     .min(6, "Độ dài 6 - 160 ký tự")
     .max(160, "Độ dài 6- 160 ký tự"),
-  confirm_password: yup
-    .string()
-    .required("Comfirm password là bắt buộc")
-    .min(6, "Độ dài 6 - 160 ký tự")
-    .max(160, "Độ dài 6- 160 ký tự")
-    .oneOf([yup.ref("password")], "Nhập lại password không khớp"),
+  confirm_password: yupPassword("password"),
   price_min: yup.string().test({
     name: "price-not-allow",
     message: "Giá không phù hợp",
@@ -112,7 +116,7 @@ export const userSchema = yup.object({
   phone: yup.string().max(20, "Độ dài không quá 20 ký tự").optional(),
   password: schema.fields["password"],
   new_password: schema.fields["password"],
-  confirm_password: schema.fields["confirm_password"],
+  confirm_password: yupPassword("new_password"),
 });
 export type UserSchema = yup.InferType<typeof userSchema>;
 
