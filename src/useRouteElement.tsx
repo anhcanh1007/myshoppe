@@ -1,11 +1,11 @@
 import { Navigate, Outlet, useRoutes } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import Register from "./pages/Register";
-import Login from "./pages/Login";
+// import Login from "./pages/Login";
 import RegisterLayout from "./layouts/RegisterLayout";
 import MainLayout from "./layouts/MainLayout";
 
-import { useContext } from "react";
+import { lazy, Suspense, useContext } from "react";
 import { AppContext } from "./contexts/app.context";
 import { path } from "./constants/path";
 import ProductDetail from "./pages/ProductList/ProductDetail";
@@ -27,6 +27,9 @@ function RejectRoute() {
 
   return !isAuthenticated ? <Outlet /> : <Navigate to="/" />;
 }
+
+//tác dụng của việc  sử dụng lazy để import component là để tránh việc một lần tải quá nhiều file js khi đã được build. Mà khi người dùng chuyển đến một trang nào đó thì mới bắt đầu tải file js thay vì trải 1 lần hết trước đó gây nặng website
+const Login = lazy(() => import("./pages/Login"));
 
 export default function useRouteElement() {
   const useRouteElement = useRoutes([
@@ -101,7 +104,9 @@ export default function useRouteElement() {
           path: path.login,
           element: (
             <RegisterLayout>
-              <Login />
+              <Suspense>
+                <Login />
+              </Suspense>
             </RegisterLayout>
           ),
         },
