@@ -4,8 +4,8 @@ export default function ProductRating({
   nonActiveClassname = "h-3 w-3 fill-current text-gray-300",
 }: {
   rating: number;
-  activeClassname: string;
-  nonActiveClassname: string;
+  activeClassname?: string;
+  nonActiveClassname?: string;
 }) {
   const handleWidth = (order: number) => {
     if (order <= rating) {

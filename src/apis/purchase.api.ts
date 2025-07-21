@@ -5,7 +5,7 @@ import http from "../ultils/http";
 const URL = "purchases";
 
 const purchaseApi = {
-  addToCart(body: { product_id: string; buy_count: string }) {
+  addToCart(body: { product_id: string; buy_count: number }) {
     return http.post<SuccessResponseApi<Purchase>>(`${URL}/add-to-cart`, body);
   },
   getPurchases(params: PurchaseListStatus) {

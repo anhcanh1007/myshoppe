@@ -13,6 +13,7 @@ import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
 import Button from "../../components/Button";
 import { path } from "../../constants/path";
+import { isAxiosError } from "axios";
 
 export type FormData = Pick<Schema, "email" | "password" | "confirm_password">;
 const registerSchema = schema.pick(["email", "password", "confirm_password"]);
@@ -44,6 +45,7 @@ export default function Register() {
       },
       onError: (error) => {
         if (
+          isAxiosError(error) &&
           isAxiosUnprocessableEntityError<
             ErrorResponseApi<Omit<FormData, "confirm_password">>
           >(error)

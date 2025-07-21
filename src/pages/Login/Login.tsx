@@ -11,6 +11,7 @@ import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
 import Button from "../../components/Button";
 import { path } from "../../constants/path";
+import { isAxiosError } from "axios";
 
 type FormData = Pick<Schema, "email" | "password">;
 const loginSchema = schema.pick(["email", "password"]);
@@ -39,6 +40,7 @@ export default function Login() {
       },
       onError: (error) => {
         if (
+          isAxiosError(error) &&
           isAxiosUnprocessableEntityError<ErrorResponseApi<FormData>>(error)
         ) {
           const formError = error.response?.data.data;

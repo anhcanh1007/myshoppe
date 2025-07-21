@@ -97,7 +97,7 @@ export default function ProductDetail() {
   const handleZoomIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const image = imageRef.current as HTMLImageElement;
-    const { naturalHeight, naturalWeight } = image;
+    const { naturalHeight, naturalWidth } = image;
 
     //cách 1: lấy offsetX, offsetY khi xử lý được bubble event
     // const { offsetX, offsetY } = e.nativeEvent;
@@ -106,8 +106,8 @@ export default function ProductDetail() {
     const offsetY = e.pageX - (rect.x + window.scrollX);
     const offsetX = e.pageY - (rect.y + window.scrollY);
     const top = offsetY * (1 - naturalHeight / rect.height);
-    const left = offsetX * (1 - naturalWeight / rect.width);
-    image.style.width = naturalWeight + "px";
+    const left = offsetX * (1 - naturalWidth / rect.width);
+    image.style.width = naturalWidth + "px";
     image.style.height = naturalHeight + "px";
     image.style.maxWidth = "unset";
     image.style.top = top + "px";

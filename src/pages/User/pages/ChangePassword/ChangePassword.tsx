@@ -8,7 +8,8 @@ import { isAxiosUnprocessableEntityError } from "../../../../ultils/utils";
 import Button from "../../../../components/Button";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
-import { omit } from "lodash";
+import omit from "lodash/omit";
+import { isAxiosError } from "axios";
 
 const passwordSchema = userSchema.pick([
   "password",
@@ -50,6 +51,7 @@ export default function ChangePassword() {
       reset();
     } catch (error) {
       if (
+        isAxiosError(error) &&
         isAxiosUnprocessableEntityError<ErrorResponseApi<PasswordFormData>>(
           error
         )

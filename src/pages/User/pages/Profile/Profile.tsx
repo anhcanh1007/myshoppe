@@ -19,6 +19,7 @@ import { AppContext } from "../../../../contexts/app.context";
 import { isAxiosUnprocessableEntityError } from "../../../../ultils/utils";
 import type { ErrorResponseApi } from "../../../../types/utils.type";
 import InputFile from "../../../../components/InputFile";
+import { isAxiosError } from "axios";
 
 type FormDataError = Omit<ProfileFormData, "date_of_birth"> & {
   date_of_birth?: string;
@@ -182,6 +183,7 @@ export default function Profile() {
       setProfileToLS((await res).data.data);
     } catch (error) {
       if (
+        isAxiosError(error) &&
         isAxiosUnprocessableEntityError<ErrorResponseApi<FormDataError>>(error)
       ) {
         const formError = error.response?.data.data;
