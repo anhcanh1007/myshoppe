@@ -4,7 +4,6 @@ import { path } from "../../../../constants/path";
 import classNames from "classnames";
 import { useQueryParams } from "../../../../hooks/useQueryParams";
 import purchaseApi from "../../../../apis/purchase.api";
-import type { PurchaseListStatus } from "../../../../types/purchase.type";
 import { useQuery } from "@tanstack/react-query";
 import { formatCurrency, generateNameId } from "../../../../ultils/utils";
 
@@ -23,8 +22,7 @@ export default function HistoryPurchase() {
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ["purchases", { status }],
-    queryFn: () =>
-      purchaseApi.getPurchases({ status: status as PurchaseListStatus }),
+    queryFn: () => purchaseApi.getPurchases({ status: status }),
   });
 
   const purchasesInCart = purchasesInCartData?.data.data;

@@ -1,14 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Input from "../../../../components/Input";
-import { userSchema, type UserSchema } from "../../../../ultils/rules";
+import { userSchema } from "../../../../ultils/rules";
 import userApi from "../../../../apis/user.api";
 import {
   Controller,
   FormProvider,
   useForm,
   useFormContext,
+  type Resolver,
 } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import InputNumber from "../../../../components/InputNumber";
 import DataSelect from "../../components/DateSelect";
@@ -20,6 +20,8 @@ import { isAxiosUnprocessableEntityError } from "../../../../ultils/utils";
 import type { ErrorResponseApi } from "../../../../types/utils.type";
 import InputFile from "../../../../components/InputFile";
 import { isAxiosError } from "axios";
+import type { InferType } from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormDataError = Omit<ProfileFormData, "date_of_birth"> & {
   date_of_birth?: string;
@@ -33,10 +35,11 @@ const profileSchema = userSchema.pick([
   "name",
 ]);
 
-type ProfileFormData = Pick<
-  UserSchema,
-  "address" | "phone" | "avatar" | "date_of_birth" | "name"
->;
+// type ProfileFormData = Pick<
+//   UserSchema,
+//   "address" | "phone" | "avatar" | "date_of_birth" | "name"
+// >;
+type ProfileFormData = InferType<typeof profileSchema>;
 
 function InputProfile() {
   const {
@@ -135,7 +138,7 @@ export default function Profile() {
       name: "",
       phone: "",
     },
-    resolver: yupResolver(profileSchema),
+    resolver: yupResolver(profileSchema) as Resolver<ProfileFormData>,
   });
 
   const {

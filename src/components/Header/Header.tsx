@@ -16,9 +16,10 @@ const MAX_PURCHASES = 5;
 export default function Header() {
   const { onSubmitSearch, register } = useSearchProducts();
   const { isAuthenticated } = useContext(AppContext);
+  const status = purchasesStatus.inCart;
   const { data: purchasesInCartData } = useQuery({
     queryKey: ["purchases", { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    queryFn: () => purchaseApi.getPurchases({ status: status }),
     enabled: isAuthenticated,
   });
 

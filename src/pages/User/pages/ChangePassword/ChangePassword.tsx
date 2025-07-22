@@ -8,7 +8,6 @@ import { isAxiosUnprocessableEntityError } from "../../../../ultils/utils";
 import Button from "../../../../components/Button";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
-import omit from "lodash/omit";
 import { isAxiosError } from "axios";
 
 const passwordSchema = userSchema.pick([
@@ -21,6 +20,8 @@ type PasswordFormData = Pick<
   UserSchema,
   "password" | "confirm_password" | "new_password"
 >;
+
+type ChangePasswordRequest = Omit<PasswordFormData, "confirm_password">;
 
 export default function ChangePassword() {
   const {
@@ -39,14 +40,12 @@ export default function ChangePassword() {
   });
 
   const changePasswordMutation = useMutation({
-    mutationFn: (body: PasswordFormData) => userApi.updateProfile(body),
+    mutationFn: (body: ChangePasswordRequest) => userApi.updateProfile(body),
   });
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data: ChangePasswordRequest) => {
     try {
-      const res = changePasswordMutation.mutateAsync(
-        omit(data, ["confirm_password"])
-      );
+      const res = changePasswordMutation.mutateAsync(data);
       toast.success((await res).data.message);
       reset();
     } catch (error) {

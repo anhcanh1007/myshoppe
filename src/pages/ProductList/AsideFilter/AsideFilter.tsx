@@ -5,11 +5,11 @@ import type Category from "../../../types/category.type";
 import classNames from "classnames";
 import type { NoUndefinedField } from "../../../types/utils.type";
 import { schema, type Schema } from "../../../ultils/rules";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
 import InputNumber from "../../../components/InputNumber";
 import RatingFilter from "../RatingFilter";
-import { omit } from "lodash";
+import omit from "lodash/omit";
 import type { QueryConfig } from "../../../hooks/useQueryConfig";
 
 interface Props {
@@ -32,7 +32,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
       price_max: "",
       price_min: "",
     },
-    resolver: yupResolver(priceSchema),
+    resolver: yupResolver(priceSchema) as Resolver<FormData>,
   });
   const navigate = useNavigate();
 

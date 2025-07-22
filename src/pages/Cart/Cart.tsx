@@ -9,7 +9,7 @@ import { purchasesStatus } from "../../constants/purchase";
 import purchaseApi from "../../apis/purchase.api";
 import type { Purchase } from "../../types/purchase.type";
 import { produce } from "immer";
-import { keyBy } from "lodash";
+import keyBy from "lodash/keyBy";
 import { toast } from "react-toastify";
 import { AppContext } from "../../contexts/app.context";
 
