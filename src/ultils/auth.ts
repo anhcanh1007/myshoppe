@@ -13,6 +13,7 @@ export const setAccessTokenFromLS = (access_token: string) => {
 export const clearAccessTokenFromLS = () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("profile");
+  localStorage.removeItem("refresh_token");
   const clearLSEvent = new Event("clearLS");
   LocalStorageEventTarget.dispatchEvent(clearLSEvent);
 };
@@ -24,4 +25,11 @@ export const setProfileToLS = (profile: User) => {
 export const getProfileFromLS = () => {
   const result = localStorage.getItem("profile");
   return result ? JSON.parse(result) : null;
+};
+
+export const setRefreshTokenToLS = (refresh_token: string) => {
+  localStorage.setItem("refresh_token", refresh_token);
+};
+export const getRefreshTokenFromLS = () => {
+  return localStorage.getItem("refresh_token") || "";
 };

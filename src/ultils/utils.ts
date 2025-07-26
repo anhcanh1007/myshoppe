@@ -3,6 +3,7 @@ import HttpStatusCode from "../constants/httpStatusCode.enum";
 import config from "../constants/config";
 
 import userImage from "../assets/user/user.svg";
+import { ErrorResponseApi } from "../types/utils.type";
 
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error);
@@ -52,3 +53,21 @@ export const getIdFromNameID = (nameId: string) => {
 export const getAvatarUrl = (avatarName?: string) => {
   return avatarName ? `${config.baseURL}images/${avatarName}` : userImage;
 };
+export function isAxiosUnauthorizedError<UnauthorizedError>(
+  error: unknown
+): error is AxiosError<UnauthorizedError> {
+  return (
+    isAxiosError(error) &&
+    error.response?.status === HttpStatusCode.Unauthorized
+  );
+}
+
+export function isAxiosExpiredTokenError<UnauthorizedError>(
+  error: unknown
+): error is AxiosError<UnauthorizedError> {
+  return (
+    isAxiosUnauthorizedError<
+      ErrorResponseApi<{ name: string; message: string }>
+    >(error) && error.response?.data?.data?.name === "EXPIRED_TOKEN"
+  );
+}

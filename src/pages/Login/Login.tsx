@@ -82,6 +82,7 @@ export default function Login() {
                 className="mt-2"
                 type="password"
                 name="password"
+                classNameEye="absolute right-[5px] h-5 w-5 cursor-pointer top-[12px]"
                 placeholder="Password"
                 register={register}
                 errorMessage={errors.password?.message}
