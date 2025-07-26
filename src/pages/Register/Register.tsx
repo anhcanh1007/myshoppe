@@ -14,6 +14,7 @@ import { AppContext } from "../../contexts/app.context";
 import Button from "../../components/Button";
 import { path } from "../../constants/path";
 import { isAxiosError } from "axios";
+import { Helmet } from "react-helmet-async";
 
 export type FormData = Pick<Schema, "email" | "password" | "confirm_password">;
 const registerSchema = schema.pick(["email", "password", "confirm_password"]);
@@ -80,6 +81,13 @@ export default function Register() {
   });
   return (
     <div className="bg-orange-500">
+      <Helmet>
+        <title>Đăng kí | My Shoppee</title>
+        <meta
+          name="description"
+          content="Đăng kí account shoppe dự án my shoppe"
+        />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10">
           <div className="lg:col-span-2 lg:col-start-4">
