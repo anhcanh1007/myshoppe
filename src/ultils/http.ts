@@ -35,8 +35,8 @@ class Http {
       timeout: 10000,
       headers: {
         "Content-Type": "application/json",
-        "expire-access-token": 5, // 5 second
-        "expire-refresh-token": 60 * 60, // 1 hours
+        "expire-access-token": 60 * 60 * 24, // 5 second
+        "expire-refresh-token": 60 * 60 * 24 * 100, // 1 hours
       },
     });
     this.instance.interceptors.request.use(

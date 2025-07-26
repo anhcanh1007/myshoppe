@@ -11,6 +11,7 @@ import InputNumber from "../../../components/InputNumber";
 import RatingFilter from "../RatingFilter";
 import omit from "lodash/omit";
 import type { QueryConfig } from "../../../hooks/useQueryConfig";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   categories: Category[];
@@ -22,6 +23,7 @@ const priceSchema = schema.pick(["price_max", "price_min"]);
 
 export default function AsideFilter({ categories, queryConfig }: Props) {
   const { category } = queryConfig;
+  const { t } = useTranslation("home");
   const {
     control,
     handleSubmit,
@@ -82,7 +84,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             </g>
           </g>
         </svg>
-        Tất cả danh mục
+        {t("asideFilter.allCategories")}
       </Link>
       <div className="bg-gray-300 h-[1px] my-4" />
       <ul>

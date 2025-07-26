@@ -20,8 +20,10 @@ import purchaseApi from "../../../apis/purchase.api";
 import { purchasesStatus } from "../../../constants/purchase";
 import { toast } from "react-toastify";
 import { path } from "../../../constants/path";
+import { useTranslation } from "react-i18next";
 
 export default function ProductDetail() {
+  const { t } = useTranslation("product");
   const [buyCount, setBuyCount] = useState(1);
   const { nameId } = useParams();
   const id = getIdFromNameID(nameId as string);
@@ -258,7 +260,7 @@ export default function ProductDetail() {
                   onFocusOut={handleChangeCount}
                 />
                 <div className="ml-6 text-sm text-gray-500">
-                  {product.quantity} sản phẩm có sẵn
+                  {product.quantity} {t("product:available")}
                 </div>
               </div>
               <div className="mt-8 flex items-center">
