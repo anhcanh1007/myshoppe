@@ -3,7 +3,7 @@ import * as matchers from "@testing-library/jest-dom/matchers";
 import { render, waitFor, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 
 expect.extend(matchers);
 
@@ -34,5 +34,18 @@ describe("App", () => {
       );
     });
     screen.debug(document.body.parentElement as HTMLElement, 9999999999);
+  });
+
+  //test badroute => ve trang notfound
+  test("Về trang notFound", async () => {
+    const badRoute = "/some/bad/route";
+    render(
+      <MemoryRouter initialEntries={[badRoute]}>
+        <App />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect(screen.getByText(/404/i)).toBeDefined();
+    });
   });
 });
